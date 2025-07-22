@@ -1,0 +1,89 @@
+<!-- -------- copy-from-here -------- -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Anaesthesia MCQ • Demo</title>
+
+<style>
+body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:1.6rem;background:#f5f7fa;color:#222}
+.card{background:#fff;border:1px solid #cfcfcf;border-radius:8px;padding:1rem;margin-bottom:1.2rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.card h3{margin:0 0 .55rem;font-size:1.04rem}
+.options button{display:block;width:100%;text-align:left;margin:.35rem 0;padding:.55rem .8rem;border:1px solid #888;border-radius:6px;background:#fafafa;cursor:pointer}
+.options button.correct{background:#c6f7d1;border-color:#0a7f37;color:#0a7f37}
+.options button.wrong{background:#ffd7d7;border-color:#c62828;color:#c62828}
+.options button:disabled{opacity:.9;cursor:default}
+.expl{display:none;margin-top:.65rem;padding:.65rem;background:#edf3ff;border-left:4px solid #4270ff;border-radius:4px}
+</style>
+</head>
+
+<body>
+<h2>Anaesthesia MCQ — Demo</h2>
+<div id="root"></div>
+
+<!--  ===== sample data =====  -->
+<script type="application/json" id="raw">
+[
+  {
+    "id":1,
+    "question":"Which agent was FIRST used for surgical anaesthesia?",
+    "options":{"a":"Ether","b":"Chloroform","c":"Halothane","d":"Nitrous oxide"},
+    "correct":"a",
+    "explanation":"Ether was publicly demonstrated by William T. G. Morton in 1846."
+  },
+  {
+    "id":2,
+    "question":"Minimum alveolar concentration (MAC) prevents movement in what % of patients?",
+    "options":{"a":"25 %","b":"50 %","c":"75 %","d":"90 %"},
+    "correct":"b",
+    "explanation":"By definition MAC equals immobility in 50 % of subjects."
+  },
+  {
+    "id":3,
+    "question":"For propofol, the MOST common injection-site adverse effect is:",
+    "options":{"a":"Bradycardia","b":"Hypertension","c":"Pain at the injection site","d":"Hallucinations"},
+    "correct":"c",
+    "explanation":"Up to 70 % of patients report burning or pain; lidocaine or a larger vein reduces this."
+  }
+]
+</script>
+
+<!--  ===== app logic =====  -->
+<script>
+const data = JSON.parse(document.getElementById('raw').textContent);
+const root = document.getElementById('root');
+
+data.forEach(q => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+      <h3>${q.id}. ${q.question}</h3>
+      <div class="options">
+        ${Object.entries(q.options)
+             .map(([k,v])=>`<button data-k="${k}">${k.toUpperCase()}. ${v}</button>`)
+             .join('')}
+      </div>
+      <div class="expl"><b>Explanation:</b> ${q.explanation}</div>`;
+  
+  //  Updated click-handler  ▶ colour wrong choice red + show correct in green
+  card.querySelectorAll('button').forEach(btn => {
+    btn.onclick = () => {
+      const pick = btn.dataset.k;
+      btn.classList.add(pick === q.correct ? 'correct' : 'wrong');
+
+      if (pick !== q.correct) {
+        card.querySelector(`button[data-k="${q.correct}"]`)
+            .classList.add('correct');
+      }
+
+      [...btn.parentElement.children].forEach(b => b.disabled = true);
+      card.querySelector('.expl').style.display = 'block';
+    };
+  });
+
+  root.appendChild(card);
+});
+</script>
+</body>
+</html>
+<!-- -------- copy-to-here -------- -->
